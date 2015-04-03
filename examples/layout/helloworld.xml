@@ -1,0 +1,16 @@
+<AbsoluteLayout
+	xmlns:layout="http://faijdherbe.net/phpca/ui/absolutelayout">
+
+  <Label
+	  text="Hello World!"
+	  layout:x="10"
+	  layout:y="0" />
+
+  <!-- some comments -->
+  <Button
+	  text="_Exit"
+	  layout:x="14"
+	  layout:y="2"
+	  onClick="exitButtonPressed"/>
+
+</AbsoluteLayout> 
