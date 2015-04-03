@@ -4,13 +4,21 @@ namespace Faijdherbe\PhpCa\UI;
 
 use \XMLReader as XMLReader;
 
-abstract class Inflatable extends View 
+abstract class Inflatable
 {
+	const DEFAULT_NAMESPACE = 'http://faijdherbe.net/phpca/ui';
+
+	private static $namespaces = [
+		self::DEFAULT_NAMESPACE => '\\Faijdherbe\\PhpCa\\UI'
+	];
+
+	public static function registerNamespace($namespace, $uri) {
+		self::$namespaces[$uri] = $namespace;
+	}
 
 	private $rootView = null;
 
 	protected function inflate($filename) {
-		$this->rootView = new AbsoluteLayout();
 
 		if(false == file_exists($filename)) {
 			throw new \UnexpectedValueException();
@@ -21,7 +29,7 @@ abstract class Inflatable extends View
 
 		$xml->read();
 
-		$subTree = $this->inflateView($xml, null);
+		$this->rootView = $this->inflateView($xml, null);
 		
 		$xml->close();
 	}
@@ -34,17 +42,37 @@ abstract class Inflatable extends View
 
 		error_log($xml->name);
 
-		$view = new AbsoluteLayout();
+		$namespace = $xml->getAttribute('xmlns');
+		if(null == $namespace) {
+			$namespace = self::DEFAULT_NAMESPACE;
+		}
+		$className = $xml->name;
+
+		$qualifiedName = '\\' . ltrim(sprintf(
+			'\\%s\\%s',
+			trim(self::$namespaces[$namespace], '\\'),
+			$className
+		), '\\');
+
+		$view = new $qualifiedName($this);
 
 		if(true == $xml->moveToFirstAttribute()) {
 	   		do {
-				if('xmlns' == $xml->prefix) {
-					$view->registerNamespace(
+				error_log(sprintf(
+					'- (%s) %s: %s',
+					$xml->prefix,
+					$xml->localName,
+					$xml->value
+				));
+				if('xmlns' == $xml->localName) {
+					continue;
+				} elseif('xmlns' == $xml->prefix) {
+					$view->setAttributePrefix(
 						$xml->value,
 						$xml->localName
 					);
 				} else {
-					if(empty($xml->prefix)) {
+					if(null == $xml->prefix) {
 						$methodName = sprintf(
 							'set%s', ucfirst($xml->localName)
 						);
@@ -53,12 +81,6 @@ abstract class Inflatable extends View
 						$view->registerAttribute($xml->name, $xml->value);
 					}
 				}
-				error_log(sprintf(
-					'- (%s) %s: %s',
-					$xml->prefix,
-					$xml->localName,
-					$xml->value
-				));
 		    } while(true == $xml->moveToNextAttribute());
 			
 			$xml->moveToElement();

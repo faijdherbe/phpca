@@ -8,6 +8,7 @@
 
   <!-- some comments -->
   <Button
+	  xmlns="http://test"
 	  text="_Exit"
 	  layout:x="14"
 	  layout:y="2"

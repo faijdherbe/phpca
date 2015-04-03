@@ -7,6 +7,12 @@ abstract class View
 	private $name = null;
 	private $subViews = [];
 
+	private $target = null;
+
+	public final function __construct(Inflatable $target) {
+		$this->target = $target;
+	}
+
 	public function getName() {
 		return $this->name;
 	}
@@ -25,10 +31,33 @@ abstract class View
 		return null;
 	}
 
-	public function registerNamespace($namespace, $prefix) {
+	private $prefixes = [];
+
+	public function setAttributePrefix($namespace, $prefix) {
+		$this->prefixes[$namespace] = $prefix;
 	}
 
-	public function registerAttribute($name, $value) {
+	private $attributes = [];
+	public function setAttribute($name, $value) {
+		$this->attributes[$name] = $value;
+	}
+
+	public function getAttribute($name){
+		return $this->attributes[$name];
+	}
+
+	public function getAttributeFromView(View $view, $attribute) {
+		$prefix = 'x';
+
+		if(isset($this->prefixes[self::$namespaceUri])) {
+			$prefix = $this->prefixes[self::$namespaceUri];
+		}
+
+		return $view->getAttribute(sprintf(
+			'%s:%s',
+			$prefix,
+			$attribute
+		));
 	}
 
 	abstract public function draw($x, $y, $w, $h);
