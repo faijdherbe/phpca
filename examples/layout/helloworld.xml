@@ -1,17 +1,29 @@
 <AbsoluteLayout
 	xmlns:layout="http://faijdherbe.net/phpca/ui/absolutelayout">
 
-  <Label
+  <TextField
 	  text="Hello World!"
 	  layout:x="10"
 	  layout:y="0" />
 
+  <KeyMonitor
+	  xmlns="http://test"
+	  layout:x="1"
+	  layout:y="1"/>
+
   <!-- some comments -->
   <Button
 	  xmlns="http://test"
-	  text="_Exit"
+	  text="Foo"
 	  layout:x="14"
 	  layout:y="2"
+	  onClick="exitButtonPressed"/>
+
+  <Button
+	  xmlns="http://test"
+	  text="Bar"
+	  layout:x="14"
+	  layout:y="4"
 	  onClick="exitButtonPressed"/>
 
 </AbsoluteLayout> 

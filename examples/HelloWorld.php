@@ -22,8 +22,25 @@ class App extends Application
 	'http://test'
 );
 
+class KeyMonitor extends \Faijdherbe\PhpCa\UI\Label {
+	public function draw($x, $y, $w, $h) {
+		$this->setText(
+			Application::current()->getLastKey()
+		);
+		parent::draw($x, $y, $w, $h);
+	}
+}
+
 class Button extends \Faijdherbe\PhpCa\UI\Label {
 	public function setOnClick($method) {
+	}
+	
+	public function acceptFocus(){
+		return true;
+	}
+	
+	public function setFocus($focus) {
+
 	}
 }
 

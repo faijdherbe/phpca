@@ -8,6 +8,9 @@ abstract class View
 	private $subViews = [];
 
 	private $target = null;
+	private $attributes = [];
+	private $prefixes = [];
+
 
 	public final function __construct(Inflatable $target) {
 		$this->target = $target;
@@ -31,33 +34,77 @@ abstract class View
 		return null;
 	}
 
-	private $prefixes = [];
+	public function addSubview(View $subView){
+		$this->subViews[] = $subView;
+	}
+
+	public function getSubviews() {
+		return $this->subViews;
+	}
+
+	public function handleInput($char) {
+		foreach($this->getSubviews() as $v) {
+			if(true == $v->handleInput($char)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	public function setAttributePrefix($namespace, $prefix) {
 		$this->prefixes[$namespace] = $prefix;
 	}
 
-	private $attributes = [];
+	private function prefixAttribute($key, $namespace = null)
+	{
+		if( null === $namespace ) {
+			$namespace = static::$namespaceUri;
+		}
+		
+		$prefix = null;
+
+		if(isset($this->prefixes[$namespace])) {
+			$prefix = $this->prefixes[$namespace];
+		} else {
+			throw new \UnexpectedValueException();
+		}
+
+		return sprintf('%s:%s', $prefix, $key);
+	}
+
 	public function setAttribute($name, $value) {
 		$this->attributes[$name] = $value;
 	}
 
-	public function getAttribute($name){
-		return $this->attributes[$name];
-	}
+	public function getAttribute($name, $default = null, View $view = null){
+		$key = $name;
 
-	public function getAttributeFromView(View $view, $attribute) {
-		$prefix = 'x';
-
-		if(isset($this->prefixes[self::$namespaceUri])) {
-			$prefix = $this->prefixes[self::$namespaceUri];
+		if(false === in_array($view, [null, $this])) {
+			$key = $view->prefixAttribute($key);
 		}
 
-		return $view->getAttribute(sprintf(
-			'%s:%s',
-			$prefix,
-			$attribute
-		));
+		$ret = $default;
+
+		if (isset($this->attributes[$key])){
+			$ret = $this->attributes[$key];
+		}
+
+		return $ret;
+	}
+
+	public final function isFirstResponder() {
+		return $this == Application::current()->getFirstResponder();
+	}
+
+	public function canBecomeNextResponder() {
+		return false;
+	}
+
+	public function getNextResponder() {
+		foreach($this->getSubviews as $view) {
+ 
+		}
 	}
 
 	abstract public function draw($x, $y, $w, $h);

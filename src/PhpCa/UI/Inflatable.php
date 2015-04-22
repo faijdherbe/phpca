@@ -40,8 +40,6 @@ abstract class Inflatable
 			throw new \RuntimeException();
 		}
 
-		error_log($xml->name);
-
 		$namespace = $xml->getAttribute('xmlns');
 		if(null == $namespace) {
 			$namespace = self::DEFAULT_NAMESPACE;
@@ -58,12 +56,6 @@ abstract class Inflatable
 
 		if(true == $xml->moveToFirstAttribute()) {
 	   		do {
-				error_log(sprintf(
-					'- (%s) %s: %s',
-					$xml->prefix,
-					$xml->localName,
-					$xml->value
-				));
 				if('xmlns' == $xml->localName) {
 					continue;
 				} elseif('xmlns' == $xml->prefix) {
@@ -78,7 +70,7 @@ abstract class Inflatable
 						);
 						$view->$methodName($xml->value);
 					} else {
-						$view->registerAttribute($xml->name, $xml->value);
+						$view->setAttribute($xml->name, $xml->value);
 					}
 				}
 		    } while(true == $xml->moveToNextAttribute());
@@ -91,7 +83,11 @@ abstract class Inflatable
 				$xml->read();
 
 				if(XMLReader::ELEMENT == $xml->nodeType) {
-					$view->subViews[] = $this->inflateView($xml, null);
+					$subView = $this->inflateView($xml, null);
+					if(false == ($subView instanceof View)){
+						throw new \UnexcpectedValueException();
+					}
+					$view->addSubView($subView);
 				} elseif(XMLReader::END_ELEMENT == $xml->nodeType) {
 					break;
 				}
