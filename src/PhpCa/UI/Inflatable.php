@@ -19,13 +19,14 @@ abstract class Inflatable
 	private $rootView = null;
 
 	protected function inflate($filename) {
+		$path = sprintf("%s/%s", getcwd(), $filename);
 
-		if(false == file_exists($filename)) {
-			throw new \UnexpectedValueException();
+		if(false == file_exists($path)) {
+			throw new \UnexpectedValueException($path . " not found");
 		}
 		
 		$xml = new XMLReader();
-		$xml->open($filename);
+		$xml->open($path);
 
 		$xml->read();
 
@@ -98,7 +99,7 @@ abstract class Inflatable
 		return $view;
 	}
 	
-	protected function rootView() {
+	protected function getRootView() {
 		return $this->rootView;
 	}
 

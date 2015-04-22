@@ -10,8 +10,8 @@ class AbsoluteLayout extends Layout
 		foreach($this->getSubviews() as $view) {
 			$vx = $view->getAttribute('x', 0, $this);
 			$vy = $view->getAttribute('y', 0, $this);
-			$vw = $view->getAttribute('w', 0, $this);
-			$vh = $view->getAttribute('h', 0, $this);
+			$vw = $view->getAttribute('width', 0, $this);
+			$vh = $view->getAttribute('height', 0, $this);
 
 			$view->draw(
 				$vx + $x,

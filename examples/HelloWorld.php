@@ -1,6 +1,8 @@
+#!/usr/bin/php
 <?php
 
-require (__DIR__ . '/../src/bootstrap.php');
+//require (__DIR__ . '/../build/phpca.phar');
+require(__DIR__ . '/../src/bootstrap.php');
 
 use \Faijdherbe\PhpCa\Application;
 

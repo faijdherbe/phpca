@@ -2,9 +2,11 @@
 
 namespace Faijdherbe\PhpCa\UI;
 
+use \Faijdherbe\PhpCa\Application;
+
 abstract class View 
 {
-	private $name = null;
+	private $id = null;
 	private $subViews = [];
 
 	private $target = null;
@@ -16,17 +18,20 @@ abstract class View
 		$this->target = $target;
 	}
 
-	public function getName() {
-		return $this->name;
+	public function setId($id) {
+		$this->id = $id;
+	}
+	public function getId() {
+		return $this->id;
 	}
 
-	protected function viewNamed($name) {
-		if( $this->getName() == $name ) {
+	public function findView($id) {
+		if( $this->getId() == $id ) {
 			return $this;
 		}
 		
 		foreach($this->subViews as $view) {
-			if(null != ($found = $view->viewNamed($name))) {
+			if(null != ($found = $view->findView($id))) {
 				return $found;
 			}
 		}
@@ -99,6 +104,13 @@ abstract class View
 
 	public function canBecomeNextResponder() {
 		return false;
+	}
+
+	public function becomeFirstResponder() {
+		if(false == $this->canBecomeFirstResponder()) {
+			throw new UnexpectedValueException('cannot become firstResponder');
+		}
+		Application::current()->setFirstResponder($this);
 	}
 
 	public function getNextResponder() {

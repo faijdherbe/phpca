@@ -4,6 +4,7 @@ namespace Faijdherbe\PhpCa;
 
 use Faijdherbe\PhpCa\UI\UI;
 use Faijdherbe\PhpCa\UI\Inflatable;
+use Faijdherbe\PhpCa\UI\Input;
 
 abstract class Application extends Inflatable
 {
@@ -11,7 +12,6 @@ abstract class Application extends Inflatable
 	private static $currentApplication = null;
 
 	private $shouldExitWithCode = false;
-	private $rootView = null;
 	private $firstResponder = null;
 
 	private $lastCharacter = null;
@@ -33,7 +33,7 @@ abstract class Application extends Inflatable
 		$this->run();
 		
 	}
-
+	/*
 	public function setRootView(View $rootView) {
 		$this->rootView = $rootView;
 	}
@@ -41,9 +41,13 @@ abstract class Application extends Inflatable
 	public function getRootView() {
 		return $this->rootView;
 	}
-	
+	*/
+
 	public function getFirstResponder() {
 		return $this->firstResponder;
+	}
+	public function setFirstResponder(\Faijdherbe\PhpCa\UI\View $responder) {
+		$this->firstResponder = $responder;
 	}
 
 	public function stopApplication($exitCode = 0) {
@@ -66,16 +70,16 @@ abstract class Application extends Inflatable
 	}
 
 	private function readInput() {
-		system("stty -echo -icanon intr undef");
-		$c = fread(STDIN, 1);
+
+		$c = Input::readKey();
 
 		$this->lastCharacter = ord($c);
 
 		switch(ord($c)) {
-		case 3: //ctrl-c
+		case Input::KEY_CTRL_C: //ctrl-c
 			$this->stopApplication();
 			break;
-		case 9: {
+		case Input::KEY_TAB: {
 			if($r = $this->getNextResponder()) {
 				$r->becomeFirstResponder();
 			}
@@ -115,7 +119,8 @@ abstract class Application extends Inflatable
 	abstract protected function applicationDidFinishLaunching(array $info);
 
 	public function draw($x, $y, $w, $h) {
-		$this->rootView()
+		$this->getRootView()
 			 ->draw($x, $y, $w, $h);
 	}
 }
+

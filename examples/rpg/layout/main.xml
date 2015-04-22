@@ -1,0 +1,16 @@
+<AbsoluteLayout
+	xmlns:layout="http://faijdherbe.net/phpca/ui/absolutelayout">
+
+  <ListView
+	  layout:x="10"
+	  layout:y="10"
+	  layout:width="20"
+	  layout:height="6"
+	  id="menu_view"
+	  title="RPG Example"
+	  border="true"
+	  background="red"
+	  foreground="black"
+	  selectionColor="yellow" />
+
+</AbsoluteLayout>
